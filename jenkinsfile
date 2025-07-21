@@ -13,7 +13,7 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Run Docker Container Locally') {
             steps {
                 sh '''
                     docker rm -f sample-app-container || true
