@@ -2,9 +2,8 @@
   hosts: localhost
   become: true
   tasks:
-    - name: Pull Docker image
-      shell: docker pull yourdockerhub/sample-app
-    - name: Stop and Remove old container
+    - name: Stop and remove existing container
       shell: docker rm -f sample-app || true
-    - name: Run new container
-      shell: docker run -d --name sample-app -p 80:5000 yourdockerhub/sample-app
+
+    - name: Run local image as container
+      shell: docker run -d --name sample-app -p 80:8080 sample-app
