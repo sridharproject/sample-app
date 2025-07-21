@@ -2,6 +2,10 @@
   hosts: localhost
   become: true
   tasks:
+    - name: Free up port 80 if in use
+      shell: |
+        fuser -k 80/tcp || true
+
     - name: Remove existing container (if any)
       shell: docker rm -f sample-app || true
 
