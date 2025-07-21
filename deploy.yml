@@ -2,8 +2,8 @@
   hosts: localhost
   become: true
   tasks:
-    - name: Stop and Remove old container
+    - name: Remove existing container (if any)
       shell: docker rm -f sample-app || true
 
-    - name: Run new container
+    - name: Run new container (Port 80 -> 5000)
       shell: docker run -d --name sample-app -p 80:5000 sample-app
