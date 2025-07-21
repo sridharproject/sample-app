@@ -13,16 +13,12 @@ pipeline {
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Run Docker Container') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh '''
-                        echo "$PASS" | docker login -u "$USER" --password-stdin
-                        docker tag sample-app sridharproject/sample-app
-                        docker push sridharproject/sample-app
-                        docker logout
-                    '''
-                }
+                sh '''
+                    docker rm -f sample-app-container || true
+                    docker run -d --name sample-app-container -p 8080:8080 sample-app
+                '''
             }
         }
 
