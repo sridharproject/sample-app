@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        APP_PORT = '80' // Host port to expose the app on
+        CONTAINER_PORT = '5000' // Flask app default port
+    }
+
     stages {
         stage('Clone Repo') {
             steps {
@@ -17,8 +22,6 @@ pipeline {
         stage('Run Docker Container Locally') {
             steps {
                 sh '''
-                    export APP_PORT=8081
-
                     echo "Freeing up port $APP_PORT if already in use..."
                     if lsof -i :$APP_PORT; then
                         echo "Port $APP_PORT is in use. Killing process..."
@@ -30,8 +33,8 @@ pipeline {
                     echo "Removing existing container if exists..."
                     docker rm -f sample-app-container || true
 
-                    echo "Starting new container on port $APP_PORT..."
-                    docker run -d --name sample-app-container -p $APP_PORT:8080 sample-app
+                    echo "Starting new container: host port $APP_PORT -> container port $CONTAINER_PORT..."
+                    docker run -d --name sample-app-container -p $APP_PORT:$CONTAINER_PORT sample-app
                 '''
             }
         }
