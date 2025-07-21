@@ -17,13 +17,18 @@ pipeline {
         stage('Run Docker Container Locally') {
             steps {
                 sh '''
-                    echo "Stopping any container using port 8080..."
-                    docker ps --filter "publish=8080" --format "{{.ID}}" | xargs -r docker stop
+                    echo "Freeing up port 8080 if already in use..."
+                    if lsof -i :8080; then
+                        echo "Port 8080 is in use. Killing process..."
+                        fuser -k 8080/tcp || true
+                    else
+                        echo "Port 8080 is free."
+                    fi
 
-                    echo "Removing old container if exists..."
+                    echo "Removing existing container if exists..."
                     docker rm -f sample-app-container || true
 
-                    echo "Starting new container on port 8080..."
+                    echo "Starting new container..."
                     docker run -d --name sample-app-container -p 8080:8080 sample-app
                 '''
             }
