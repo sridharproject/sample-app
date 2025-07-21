@@ -17,19 +17,21 @@ pipeline {
         stage('Run Docker Container Locally') {
             steps {
                 sh '''
-                    echo "Freeing up port 8080 if already in use..."
-                    if lsof -i :8080; then
-                        echo "Port 8080 is in use. Killing process..."
-                        fuser -k 8080/tcp || true
+                    export APP_PORT=8081
+
+                    echo "Freeing up port $APP_PORT if already in use..."
+                    if lsof -i :$APP_PORT; then
+                        echo "Port $APP_PORT is in use. Killing process..."
+                        fuser -k ${APP_PORT}/tcp || true
                     else
-                        echo "Port 8080 is free."
+                        echo "Port $APP_PORT is free."
                     fi
 
                     echo "Removing existing container if exists..."
                     docker rm -f sample-app-container || true
 
-                    echo "Starting new container..."
-                    docker run -d --name sample-app-container -p 8080:8080 sample-app
+                    echo "Starting new container on port $APP_PORT..."
+                    docker run -d --name sample-app-container -p $APP_PORT:8080 sample-app
                 '''
             }
         }
