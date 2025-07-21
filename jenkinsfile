@@ -6,11 +6,13 @@ pipeline {
                 git credentialsId: 'GITHUB_CRED', url: 'https://github.com/sridharproject/sample-app.git', branch: 'main'
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t sample-app .'
             }
         }
+
         stage('Push to DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
@@ -18,10 +20,12 @@ pipeline {
                         echo "$PASS" | docker login -u "$USER" --password-stdin
                         docker tag sample-app sridharproject/sample-app
                         docker push sridharproject/sample-app
+                        docker logout
                     '''
                 }
             }
         }
+
         stage('Deploy with Ansible') {
             steps {
                 sh 'ansible-playbook ansible/deploy.yml'
