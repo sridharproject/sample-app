@@ -13,11 +13,13 @@ pipeline {
         }
         stage('Push to DockerHub') {
             steps {
-                sh '''
-                    echo "Sree$#2805SS" | docker login -u "Sridharproject" --password-stdin
-                    docker tag sample-app sridharproject/sample-app
-                    docker push sridharproject/sample-app
-                '''
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh '''
+                        echo "$PASS" | docker login -u "$USER" --password-stdin
+                        docker tag sample-app sridharproject/sample-app
+                        docker push sridharproject/sample-app
+                    '''
+                }
             }
         }
         stage('Deploy with Ansible') {
