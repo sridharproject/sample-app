@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git credentialsId: 'github-creds', url: 'https://github.com/sridharproject/sample-app.git', branch: 'main'
+                git credentialsId: 'GITHUB_CRED', url: 'https://github.com/sridharproject/sample-app.git', branch: 'main'
             }
         }
 
@@ -13,12 +13,11 @@ pipeline {
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Run Docker Container Locally') {
             steps {
                 sh '''
-                    echo "Sree$#2805SS" | docker login -u "Sridharproject" --password-stdin
-                    docker tag sample-app sridharproject/sample-app
-                    docker push sridharproject/sample-app
+                    docker rm -f sample-app-container || true
+                    docker run -d --name sample-app-container -p 8080:8080 sample-app
                 '''
             }
         }
